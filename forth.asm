@@ -70,6 +70,10 @@ immediate:	dq immediate_op
 		db 1,'[',0,0,0,0,0,0
 
 
+;; This is the code section, need to put this somewhere too
+lexicon_const:		nop
+code_const:		nop
+_var:		nop
 add_op:			nop
 sub_op:			nop
 mul_op:			nop
