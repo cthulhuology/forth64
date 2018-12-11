@@ -12,36 +12,81 @@ boot:
 
 ;; This is the source code section
 code_section:
+			align 8, db 0x90
 lexicon_const:		nop
+			align 8, db 0x90
 code_const:		nop
+			align 8, db 0x90
 _var:			nop
-add_op:			nop
+			align 8, db 0x90
+
+add_op:			
+			mov rbx, 0xfeedfacedeadbeef
+			pop rbx
+			add rax,rbx
+			ret
+			align 8, db 0x90
+
 sub_op:			nop
+			align 8, db 0x90
 mul_op:			nop
+			align 8, db 0x90
 div_op:			nop
+			align 8, db 0x90
 mod_op:			nop
-neg_op:			nop
+			align 8, db 0x90
+;; unary negation
+neg_op:			neg rax
+			ret
+			align 8, db 0x90
+
 and_op:			nop
+			align 8, db 0x90
 or_op:			nop
+			align 8, db 0x90
 xor_op:			nop
-not_op:			nop
+			align 8, db 0x90
+
+;; unary not
+not_op:			not rax
+			ret
+			align 8, db 0x90
+
 equ_op:			nop
+			align 8, db 0x90
 lesser_op:		nop
+			align 8, db 0x90
 greater_op:		nop
+			align 8, db 0x90
 branch_op:		nop
+			align 8, db 0x90
 fetch_op:		nop
+			align 8, db 0x90
 fetch_plus_op:		nop
+			align 8, db 0x90
 store_op:		nop
+			align 8, db 0x90
 store_plus_op:		nop
+			align 8, db 0x90
 comma_op:		nop
+			align 8, db 0x90
 ret_op:			nop
+			align 8, db 0x90
 call_op:		nop
-lit_op:			nop
+			align 8, db 0x90
+lit_op:			push rax
+			mov rax,0xcafebabecafebabe
+			align 8, db 0x90
 quote_op:		nop
+			align 8, db 0x90
 tick_op:		nop
+			align 8, db 0x90
 string_op:		nop
+			align 8, db 0x90
 comment_op:		nop
+			align 8, db 0x90
 comment_end_op:		nop
+			align 8, db 0x90
 immediate_op:		nop
 
 ;; this is the pointer to the current end of the code section
@@ -151,12 +196,12 @@ times 1000 dq 0
 
 ;; this is the data segment for runtime code
 data_section:
-
 lexicon_ptr:	dq lex_end
 code_ptr: 	dq code_end
 scratch_ptr:	dq scratch_end
-data_ptr:	dq data_end
 pad_ptr:	dq pad_end
+data_ptr:	dq data_end
+source_ptr:	dq source_end
 
 data_end:
 
