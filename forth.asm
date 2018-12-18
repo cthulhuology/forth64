@@ -45,7 +45,7 @@ compile:
 align 16, db 0x90
 lookup:
 	mov rsi,rax	; word being looked up
-	mov rdi,[lex_ptr]
+	mov rdi,[lexicon_ptr]
 	sub rdi,24	; drop to start of the string field
 .loop:
 	mov cl,[rsi]	; load the 8 byte length
@@ -54,7 +54,7 @@ lookup:
 	je .found
 	mov rsi,rax
 	sub rdi,56	; move to the next word
-	cmp rdi,lexicon	; check if we're still processing words
+	cmp rdi,lexicon_section	; check if we're still processing words
 	jae .loop
 .notfound:
 	mov rax,0	; not found
