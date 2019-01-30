@@ -1,0 +1,22 @@
+#!/usr/bin/bash
+echo "" | slackpkg install autoconf
+echo "" | slackpkg install automake
+echo "" | slackpkg install binutils
+echo "" | slackpkg install bison
+echo "" | slackpkg install doxygen
+echo "" | slackpkg install flex
+echo "" | slackpkg install gcc
+echo "" | slackpkg install gcc-g++
+echo "" | slackpkg install gettext-tools
+echo "" | slackpkg install kernel-headers
+echo "" | slackpkg install libtool
+echo "" | slackpkg install m4
+echo "" | slackpkg install make
+echo "" | slackpkg install perl
+echo "" | slackpkg install pkg-config
+echo "" | slackpkg install python
+echo "" | slackpkg install guile
+echo "" | slackpkg install libmpc
+echo "" | slackpkg install libffi
+echo "" | slackpkg install gc
+echo "" | slackpkg install glibc
