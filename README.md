@@ -41,7 +41,7 @@ in forth64 running on forth64.  The C binary will allow us to interpret
 our forth64 implementation generating the native binary.  We can then use
 the resulting binary to recompile the source, and iff all goes well, the
 resulting binary will be identitical.  At that point, future development
-of forht64 can be done entirely in forth64.
+of forth64 can be done entirely in forth64.
 
 About the Language
 ------------------
