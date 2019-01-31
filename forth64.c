@@ -24,6 +24,7 @@ enum ops {
 	RET,		// return to address at rtos
 	CALL,		// imm, push current ip to rs, and set ip to immediate value
 	JMP,		// imm, set ip to immediate value
+	BR,		// imm, set ip to immediate value if tos is non-0
 	ADD,		// add nos + tos
 	SUB,		// subtract nos - tos
 	MUL,		// multiply nos * tos
@@ -41,6 +42,14 @@ enum ops {
 	STORE_PLUS,	// store nos at tos, increment tos
 	FETCH,		// fetch value at tos to tos
 	FETCH_PLUS,	// fetch value at tos to nos, increment tos
+	COMMA,		// write the value of tos to a code address
+	QUOTE,		// imm, write immedate value to code address
+	TICK,		// imm, place address of definition on stack
+	COMMENT,	// consume input buffer till COMMENT_END
+	COMMENT_END,	// resume compilation
+	IMMEDIATE,	// switch to immediate scratchpad
+	IMMEDIATE_END,	// evaluate immediate scratchpad & resume compilation
+	STRING,		// imm, place address of compiled string literal in tos
 	OPEN,		// open a file, leave fd in tos
 	READ,		// read cell from fd in tos
 	WRITE,		// write nos cell to fd in tos
@@ -49,6 +58,7 @@ enum ops {
 	SEND,		// send nos to socket in tos
 	SOCKET,		// open a socket fd in tos
 	LISTEN,		// listen to port nos on socket tos
+
 	HALT = 0xcafebabe
 };
 
@@ -92,6 +102,12 @@ void forth(stack* code, stack* dsp, stack* rsp) {
 		break;
 	case JMP:
 		cp = (stack*)*(++cp);
+		op = *cp;
+		break;
+	case BR:
+		tos = *dsp;
+		--dsp;
+		if (!tos) cp += (stack*)*(++cp); // then jump
 		op = *cp;
 		break;
 	case ADD:
@@ -182,6 +198,30 @@ void forth(stack* code, stack* dsp, stack* rsp) {
 		op = *(++cp);
 		break;
 	case FETCH_PLUS:
+		op = *(++cp);
+		break;
+	case COMMA:
+		op = *(++cp);
+		break;
+	case QUOTE:
+		op = *(++cp);
+		break;
+	case TICK:
+		op = *(++cp);
+		break;
+	case COMMENT:
+		op = *(++cp);
+		break;
+	case COMMENT_END:
+		op = *(++cp);
+		break;
+	case IMMEDIATE:
+		op = *(++cp);
+		break;
+	case IMMEDIATE_END:
+		op = *(++cp);
+		break;
+	case STRING:
 		op = *(++cp);
 		break;
 	case OPEN:
