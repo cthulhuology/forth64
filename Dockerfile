@@ -1,4 +1,3 @@
-
 FROM vbatts/slackware
 LABEL maintainer="Dave Goehrig <dave@dloh.org>"
 RUN slackpkg update
@@ -27,9 +26,7 @@ RUN echo "" | slackpkg install m4
 RUN echo "" | slackpkg install make
 RUN echo "" | slackpkg install pkg-config
 RUN echo "" | slackpkg install libmpc
-RUN echo "" | slackpkg install glibc 
+RUN echo "" | slackpkg install glibc
 RUN mv /usr/bin/vi /usr/bin/vi.old
 RUN ln -s /usr/bin/vim /usr/bin/vi
 RUN mkdir /forth64
-
-

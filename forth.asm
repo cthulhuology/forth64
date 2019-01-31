@@ -1,4 +1,3 @@
-
 BITS 64
 
 ;; macros to make life easier
@@ -31,7 +30,7 @@ SECTION .text
 ;; this does the cold boot of the system
 boot:
 
-align 8, db 0x90
+align 16, db 0x90
 compile:
 	mov rsi,rax
 	xor rcx,rcx
@@ -41,6 +40,31 @@ compile:
 	rep movsb
 	mov [code_ptr],rdi
 	ret
+
+align 16, db 0x90
+lookup:
+	mov rsi,rax	; word being looked up
+	mov rdi,[lexicon_ptr]
+	sub rdi,24	; drop to start of the string field
+.loop:
+	mov cl,[rsi]	; load the 8 byte length
+	inc cl		; add one to the length
+	rep cmpsb
+	je .found
+	mov rsi,rax
+	sub rdi,56	; move to the next word
+	cmp rdi,lexicon_section	; check if we're still processing words
+	jae .loop
+.notfound:
+	mov rax,0	; not found
+	ret
+.found:
+	mov rax,[rdi-32] ; found, fetch value
+	ret
+
+	
+	
+	
 
 ;; Counted strings containing each compilcation unit
 
