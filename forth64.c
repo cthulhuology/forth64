@@ -97,17 +97,17 @@ void forth(stack* code, stack* dsp, stack* rsp) {
 		break;
 	case CALL:
 		*(++rsp) = (stack)(cp+1);
-		cp = (stack*)*(++cp);
+		cp = cp + *(++cp);
 		op = *cp;
 		break;
 	case JMP:
-		cp = (stack*)*(++cp);
+		cp = cp + *(++cp);
 		op = *cp;
 		break;
 	case BR:
 		tos = *dsp;
 		--dsp;
-		if (!tos) cp += (stack*)*(++cp); // then jump
+		cp =  (!tos) ? cp + *(cp+1) : cp+2; // then jump
 		op = *cp;
 		break;
 	case ADD:
@@ -262,9 +262,9 @@ int test(stack* code, stack* data, stack* retn) {
 	stack ds[] = {0,0,0,0,0,0,0,0};
 	stack rs[] = {0,0,0,0,0,0,0,0};
 	forth(code,ds,rs);
-//	fprintf(stderr,"test result\n");
-//	dump(0,ds,rs,0,0,0);
-//	dump(0,data,retn,0,0,0);
+	fprintf(stderr,"test result\n");
+	dump(0,ds,rs,0,0,0);
+	dump(0,data,retn,0,0,0);
 	return memcmp(ds,data,8*sizeof(stack)) | memcmp(rs,retn,8*sizeof(stack));
 }
 
@@ -278,7 +278,7 @@ typedef struct test_struct Test;
 // Run the interpreter on test programs
 int main(int argc, char** argv) {
 	int i = 0;
-	int max_tests = 5;
+	int max_tests = 8;
 	Test tests[] = {
 	{ 
 		.data = { 0,0,0,0,0,0,0,0 },
@@ -304,6 +304,16 @@ int main(int argc, char** argv) {
 		.data = { 0,5,10,0,0,0,0,0 },
 		.retn = { 0,0,0,0,0,0,0,0 },
 		.code = { LIT, 15, LIT, 10, SUB, NOP, NOP, HALT }
+	},
+	{
+		.data = { 0,-15,0,0,0,0,0,0 },
+		.retn = { 0,0,0,0,0,0,0,0 },
+		.code = { LIT, 15, JMP, 3, LIT, 1, NEG, HALT }
+	},
+	{
+		.data = { 0,0,0,0,0,0,0,0 },
+		.retn = { 0,0,0,0,0,0,0,0 },
+		.code = { CALL, 1, NOP, NOP, NOP, NOP, NOP, HALT }
 	},
 	};
 	for (i = 0; i < max_tests; ++i) {
