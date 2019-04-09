@@ -169,19 +169,19 @@ void forth(stack* code, stack* dsp, stack* rsp) {
 	case EQ: // a b = -- flag 
 		tos = *dsp;
 		nos = *(--dsp);
-		*dsp = nos == tos;
+		*dsp = (nos == tos) ? -1 : 0;
 		op = *(++cp);
 		break;
 	case LT: // a b < -- flag
 		tos = *dsp;
 		nos = *(--dsp);
-		*dsp = nos < tos;
+		*dsp = ((long long)(nos) < (long long)(tos)) ? -1 : 0;
 		op = *(++cp);
 		break;
 	case GT: // a b > -- flag
 		tos = *dsp;
 		nos = *(--dsp);
-		*dsp = nos > tos;
+		*dsp = ((long long)nos > (long long)tos) ? -1 : 0;
 		op = *(++cp);
 		break;
 	case STORE: // value addr $ -- 
@@ -192,12 +192,21 @@ void forth(stack* code, stack* dsp, stack* rsp) {
 		op = *(++cp);
 		break;
 	case STORE_PLUS: // value addr $+ -- addr+1
+		tos = *dsp;
+		nos = *(--dsp);
+		*(stack*)tos = nos;
+		*(dsp) = tos + sizeof(stack);
 		op = *(++cp);
 		break;
 	case FETCH:
+		tos = *dsp;
+		*dsp = *(stack*)tos;
 		op = *(++cp);
 		break;
 	case FETCH_PLUS:
+		tos = *dsp;
+		*dsp = *(stack*)tos;
+		*(++dsp) = tos + sizeof(stack);
 		op = *(++cp);
 		break;
 	case COMMA:
@@ -258,52 +267,175 @@ void forth(stack* code, stack* dsp, stack* rsp) {
 // stacks match the interpreted stacks at the end.
 // All stacks are initialized to 0
 // returns non-zero if they do not match
-int test(stack* code, stack* data, stack* retn) {
-	stack ds[] = {0,0,0,0,0,0,0,0};
-	stack rs[] = {0,0,0,0,0,0,0,0};
+
+stack memory[8]; 			// a sample RAM for testing
+stack ds[] = {0,0,0,0,0,0,0,0};		// a sample data stack for testing
+stack rs[] = {0,0,0,0,0,0,0,0};		// a sample return stack for testing
+
+int test(stack* code, stack* data, stack* retn, stack* mem) {
+	int retval = 0;
+	memset(memory,0,sizeof(memory));
+	memset(ds,0,sizeof(ds));
+	memset(rs,0,sizeof(rs));
 	forth(code,ds,rs);
+<<<<<<< HEAD
 	fprintf(stderr,"test result\n");
 	dump(0,ds,rs,0,0,0);
 	dump(0,data,retn,0,0,0);
 	return memcmp(ds,data,8*sizeof(stack)) | memcmp(rs,retn,8*sizeof(stack));
+=======
+	retval = memcmp(ds,data,8*sizeof(stack)) | memcmp(rs,retn,8*sizeof(stack)) | memcmp(memory,mem,8*sizeof(stack));
+	if (retval) {
+		fprintf(stderr,"test result\n");
+		dump(0,ds,rs,0,0,0);
+		dump(0,data,retn,0,0,0);
+	}
+	return retval;
+>>>>>>> f90f3b5b11dec68212365e16676878a2a6f44758
 }
 
 struct test_struct {
 	stack data[8];
 	stack retn[8];
 	stack code[8];
+	stack memory[8];
 };
 typedef struct test_struct Test;
+
 
 // Run the interpreter on test programs
 int main(int argc, char** argv) {
 	int i = 0;
+<<<<<<< HEAD
 	int max_tests = 8;
+=======
+>>>>>>> f90f3b5b11dec68212365e16676878a2a6f44758
 	Test tests[] = {
 	{ 
 		.data = { 0,0,0,0,0,0,0,0 },
 		.retn = { 0,0,0,0,0,0,0,0 },
-		.code = {NOP, NOP, NOP, NOP, NOP, NOP, NOP, HALT }
+		.code = {NOP, NOP, NOP, NOP, NOP, NOP, NOP, HALT },
+		.memory = { 0,0,0,0,0,0,0,0 }
 	},
 	{
 		.data = { 0,1,0,0,0,0,0,0 },
 		.retn = { 0,0,0,0,0,0,0,0 },
-		.code = { LIT, 1, NOP, NOP, NOP, NOP, NOP, HALT }
+		.code = { LIT, 1, NOP, NOP, NOP, NOP, NOP, HALT },
+		.memory = { 0,0,0,0,0,0,0,0 }
 	},
 	{
 		.data = { 0,3,2,0,0,0,0,0 },
 		.retn = { 0,0,0,0,0,0,0,0 },
-		.code = { LIT, 1, LIT, 2, ADD, NOP, NOP, HALT }
+		.code = { LIT, 1, LIT, 2, ADD, NOP, NOP, HALT },
+		.memory = { 0,0,0,0,0,0,0,0 }
 	},
 	{
 		.data = { 0,-3,2,0,0,0,0,0 },
 		.retn = { 0,0,0,0,0,0,0,0 },
-		.code = { LIT, 1, LIT, 2, ADD, NEG, NOP, HALT }
+		.code = { LIT, 1, LIT, 2, ADD, NEG, NOP, HALT },
+		.memory = { 0,0,0,0,0,0,0,0 }
 	},
 	{
 		.data = { 0,5,10,0,0,0,0,0 },
 		.retn = { 0,0,0,0,0,0,0,0 },
-		.code = { LIT, 15, LIT, 10, SUB, NOP, NOP, HALT }
+		.code = { LIT, 15, LIT, 10, SUB, NOP, NOP, HALT },
+		.memory = { 0,0,0,0,0,0,0,0 }
+	},
+	{
+		.data = { 0,50,10,0,0,0,0,0 },
+		.retn = { 0,0,0,0,0,0,0,0 },
+		.code = { LIT, 5, LIT, 10, MUL, NOP, NOP, HALT },
+		.memory = { 0,0,0,0,0,0,0,0 }
+	},
+	{
+		.data = { 0,5,10,0,0,0,0,0 },
+		.retn = { 0,0,0,0,0,0,0,0 },
+		.code = { LIT, 50, LIT, 10, DIV, NOP, NOP, HALT },
+		.memory = { 0,0,0,0,0,0,0,0 }
+	},
+	{
+		.data = { 0,0,10,0,0,0,0,0 },
+		.retn = { 0,0,0,0,0,0,0,0 },
+		.code = { LIT, 50, LIT, 10, MOD, NOP, NOP, HALT },
+		.memory = { 0,0,0,0,0,0,0,0 }
+	},
+	{
+		.data = { 0,50,-10,0,0,0,0,0 },
+		.retn = { 0,0,0,0,0,0,0,0 },
+		.code = { LIT, 50, LIT, 10, NEG, NOP, NOP, HALT },
+		.memory = { 0,0,0,0,0,0,0,0 }
+	},
+	{
+		.data = { 0,2,2,0,0,0,0,0 },
+		.retn = { 0,0,0,0,0,0,0,0 },
+		.code = { LIT, 7, LIT, 2, AND, NOP, NOP, HALT },
+		.memory = { 0,0,0,0,0,0,0,0 }
+	},
+	{
+		.data = { 0,15,8,0,0,0,0,0 },
+		.retn = { 0,0,0,0,0,0,0,0 },
+		.code = { LIT, 7, LIT, 8, OR, NOP, NOP, HALT },
+		.memory = { 0,0,0,0,0,0,0,0 }
+	},
+	{
+		.data = { 0,1,-2,0,0,0,0,0 },
+		.retn = { 0,0,0,0,0,0,0,0 },
+		.code = { LIT, -1, LIT, -2, XOR, NOP, NOP, HALT },
+		.memory = { 0,0,0,0,0,0,0,0 }
+	},
+	{
+		.data = { 0,-1,1,0,0,0,0,0 },
+		.retn = { 0,0,0,0,0,0,0,0 },
+		.code = { LIT, -1, LIT, -2, NOT, NOP, NOP, HALT },
+		.memory = { 0,0,0,0,0,0,0,0 }
+	},
+	{
+		.data = { 0,0,-2,0,0,0,0,0 },
+		.retn = { 0,0,0,0,0,0,0,0 },
+		.code = { LIT, -1, LIT, -2, EQ, NOP, NOP, HALT },
+		.memory = { 0,0,0,0,0,0,0,0 }
+	},
+	{
+		.data = { 0,-1,-1,0,0,0,0,0 },
+		.retn = { 0,0,0,0,0,0,0,0 },
+		.code = { LIT, -1, LIT, -1, EQ, NOP, NOP, HALT },
+		.memory = { 0,0,0,0,0,0,0,0 }
+	},
+	{
+		.data = { 0,0,-2,0,0,0,0,0 },
+		.retn = { 0,0,0,0,0,0,0,0 },
+		.code = { LIT, -1, LIT, -2, LT, NOP, NOP, HALT },
+		.memory = { 0,0,0,0,0,0,0,0 }
+	},
+	{
+		.data = { 0,-1,-2,0,0,0,0,0 },
+		.retn = { 0,0,0,0,0,0,0,0 },
+		.code = { LIT, -1, LIT, -2, GT, NOP, NOP, HALT },
+		.memory = { 0,0,0,0,0,0,0,0 }
+	},
+	{
+		.data = { 0,66,&memory[1],0,0,0,0,0 },
+		.retn = { 0,0,0,0,0,0,0,0 },
+		.code = { LIT, 66, LIT, &memory[1], STORE, NOP, NOP, HALT },
+		.memory = { 0,66,0,0,0,0,0,0 }
+	},
+	{
+		.data = { 0,&memory[2],&memory[1],0,0,0,0,0 },
+		.retn = { 0,0,0,0,0,0,0,0 },
+		.code = { LIT, 66, LIT, &memory[1], STORE_PLUS, NOP, NOP, HALT },
+		.memory = { 0,66,0,0,0,0,0,0 }
+	},
+	{
+		.data = { 0,66,&memory[1],0,0,0,0,0 },
+		.retn = { 0,0,0,0,0,0,0,0 },
+		.code = { LIT, 66, LIT, &memory[1], STORE, LIT, &memory[1], FETCH, HALT },
+		.memory = { 0,66,0,0,0,0,0,0 }
+	},
+	{
+		.data = { 0,66,&memory[2],0,0,0,0,0 },
+		.retn = { 0,0,0,0,0,0,0,0 },
+		.code = { LIT, 66, LIT, &memory[1], STORE, LIT, &memory[1], FETCH_PLUS, HALT },
+		.memory = { 0,66,0,0,0,0,0,0 }
 	},
 	{
 		.data = { 0,-15,0,0,0,0,0,0 },
@@ -316,8 +448,9 @@ int main(int argc, char** argv) {
 		.code = { CALL, 1, NOP, NOP, NOP, NOP, NOP, HALT }
 	},
 	};
+	int max_tests = 21;
 	for (i = 0; i < max_tests; ++i) {
-		fprintf(stderr, "test[%d] %s\n", i, test(tests[i].code,tests[i].data,tests[i].retn) ? "fail": "pass");	
+		fprintf(stderr, "test[%d] %s\n", i, test(tests[i].code,tests[i].data,tests[i].retn,tests[i].memory) ? "fail": "pass");	
 	}
 	return 0;
 }
