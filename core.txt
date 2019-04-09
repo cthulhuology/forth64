@@ -1,0 +1,89 @@
+@		fetch
+U@ or W@	fetch 16 unsigned
+H@		fetch 16 signed
+C@		fetch 8
+!		store
+H! or W~	store 16
+C!		store 8
+2C@		fetch 2 bytes ( a -- nh nl )
+2C!		( nh nl a -- ) store 2 bytes
+2!		( x1 x2 a -- ) store 64
+2@		( a -- x1 x2 ) fetch 64
++!		( n a -- ) add to addr
+C+!		( n a -- ) add byte to addr
+ON		( a -- ) set addr to -1
+OFF		( a -- ) set addr to 0
+++		( a -- ) add 1 to addr
+@+		( a -- a+4 n ) fetch plus (seems backwards because you can't @+ @+ @+ @+...)
+!+		( a n -- a+4 ) store plus (seems backwards because you must a n !+ n !+ n 1+ which is lit oriented)
+~!+		( n a -- a+4 ) reverse store plus
+R>		( x -- ) (R: -- x ) push 
+>R		( -- x) (R: x -- ) pop
+R@		( -- x) (R: x -- x ) fetch rtos
+DUP>R		( x -- x ) (R: -- x ) copy tos to rtos
+R>DROP		( -- ) ( R: x -- ) drop rtos
+R>2DROP		( x -- ) ( R: x -- ) drop both tos and rtos
+DROPR>		( n -- x ) ( R: x -- ) replace tos with rtos
+2>R		( x1 x2 -- ) ( R: -- x1 x2 ) push push nb: order
+2R>		( -- x1 x2 ) ( R: x1 x2 -- ) pop pop nb: order
+2R@		( -- x1 x2 ) ( R: x1 x2 -- x1 x2 ) read 2 from r
+N>R		( x1 x2 .. xn n -- ) ( R: -- x1 x2 .. xn n ) push n to r
+NR>		(  -- x1 x2 .. xn n ) ( R: x1 x2 .. xn n -- ) pop n 
++RP		( n -- ) update return pointer by n
+NIP		( x1 x2 -- x2 ) discard nos
+DROP		( x1 x2 -- x1 ) discard tos
+DUP		( x1 -- x1 x1 ) duplicate tos
+SWAP		( x1 x2 -- x2 x1 ) swap tos and nos
+OVER		( x1 x2 -- x1 x2 x1 ) copy nos
+THIRD		( x1 x2 x3 -- x1 x2 x3 x1 ) copy 3rd on stack
+FOURTH		( x1 x2 x3 x4 -- x1 x2 x3 x4 x1 ) copy 4th on stack
+ROT		( x1 x2 x3 -- x2 x3 x1 ) mov 3rd to tos
+-ROT		( x1 x2 x3 -- x3 x1 x2 ) tuck tos to 3rd pos
+TUCK		( x1 x2 -- x2 x1 x2 ) tuck tos beneath nos
+?DUP		( x -- 0 | x x ) dup if not zero
+NOOP		( -- ) nop
+AND		binary and
+OR		binary or
+XOR		binary xor
+INVERT		binary not
++		add
+SWAP-		( n1 n2 -- n2-n1 )
+-		( n1 n2 -- n1-n2 )
+NEGATE		negate
+ABS		makes positive (if negative negate)
+><		bl bh xchg
+>H<		rol 16 swapping high and low of 32 bits
+0<>		not zero ( ebx neg ebx,ebx sbb -- leaves 0 or -1)
+0= or NOT		0<> not 
+0<		less than zero sign extend 64 bit uses high bits (0 or -1)
+0>		just does a 0 >
+1+		inc tos
+1-		dec tos
+2+		2 +
+2-		2 -
+2/		sar (sign preserve)
+2*		shl
+U2/		shr
+4+		4 +
+4-		4 - 
+RSHIFTA		( x1 n -- x2 ) sar n
+RSHIFT		( x1 n -- x2 ) shr n
+LSHIFT		( x1 n -- x2 ) shl n
+CELL		4
+-CELL		-4
+CELL+		4 +
+CELL-		4 -
+CELLS		2 shl
+CELL/		2 shr
+CHAR+		1 +
+CHARS		nop
+ALIGNED		nop
+ALIGN		nop
+UNLOOP		rp += 8
+I		inner loop index
+I'		inner loop limit
+J		outer loop index
+J'		outer loop limit
+LOWORD		16 low bits
+HIWORD		16 high bits
+PICK		nth item from stack
